@@ -6,7 +6,6 @@
 <!-- badges: start -->
 
 ![](https://img.shields.io/badge/cool-useless-green.svg)
-[![CRAN](https://www.r-pkg.org/badges/version/simpleopenmp)](https://CRAN.R-project.org/package=simpleopenmp)
 [![R-CMD-check](https://github.com/coolbutuseless/simpleopenmp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/coolbutuseless/simpleopenmp/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -58,9 +57,9 @@ y <- runif(1e6)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Sanity check all results are equal
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-res_r      <- pdist_r(x, y)
-res_c     <- pdist_c(x, y)
-res_openmp <- pdist_openmp(x, y)
+res_r      <- pdist_r(x, y)       # Just R code
+res_c      <- pdist_c(x, y)       # Serial C code
+res_openmp <- pdist_openmp(x, y)  # Parallel R code with 2 threads
 
 stopifnot(isTRUE(all.equal(res_r, res_c)))
 stopifnot(isTRUE(all.equal(res_r, res_openmp)))
@@ -81,12 +80,12 @@ bench::mark(
 
 | expression                       |       min |    median |   itr/sec | mem_alloc |
 |:---------------------------------|----------:|----------:|----------:|----------:|
-| pdist_r(x, y)                    | 34.107639 | 11.611371 |  1.000000 |         2 |
-| pdist_c(x, y)                    |  3.872677 |  2.640598 |  4.597156 |         1 |
-| pdist_openmp(x, y, nthreads = 1) |  3.884152 |  2.698892 |  4.479240 |         1 |
-| pdist_openmp(x, y, nthreads = 2) |  1.894535 |  1.655774 |  7.351177 |         1 |
-| pdist_openmp(x, y, nthreads = 4) |  1.000000 |  1.124378 | 11.642349 |         1 |
-| pdist_openmp(x, y, nthreads = 8) |  1.424043 |  1.000000 | 12.011554 |         1 |
+| pdist_r(x, y)                    | 32.889105 | 11.061369 |  1.000000 |         2 |
+| pdist_c(x, y)                    |  3.783722 |  2.537383 |  4.390539 |         1 |
+| pdist_openmp(x, y, nthreads = 1) |  3.814306 |  2.517523 |  4.403627 |         1 |
+| pdist_openmp(x, y, nthreads = 2) |  1.896230 |  1.634890 |  6.897379 |         1 |
+| pdist_openmp(x, y, nthreads = 4) |  1.000000 |  1.049221 | 11.003295 |         1 |
+| pdist_openmp(x, y, nthreads = 8) |  1.689785 |  1.000000 | 10.886449 |         1 |
 
 ## Status by Platform
 
@@ -158,7 +157,7 @@ Csardi](https://github.com/gaborcsardi).
 Notes:
 
 - You may need to install `checkbashisms` script as `R CMD CHECK`
-  requires this for checking the `configure` and `clean` scripts
+  requires this for checking the `configure` and `cleanup` scripts
   - On macOS install [homebrew](https://brew.sh/) and run
     `brew install checkbashisms`
 

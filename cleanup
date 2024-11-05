@@ -10,5 +10,6 @@
 # the package is compiled on, and the 'configure.log' would be considered
 # junk by the CRAN build process (but is otherwise useful for me for debuggin)
 rm -f src/Makevars configure.log
-rm -f a.out a.out.dSYM
+rm -f a.out 
+rm -rf a.out.dSYM
 

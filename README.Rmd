@@ -19,7 +19,6 @@ library(simpleopenmp)
 
 <!-- badges: start -->
 ![](https://img.shields.io/badge/cool-useless-green.svg)
-[![CRAN](https://www.r-pkg.org/badges/version/simpleopenmp)](https://CRAN.R-project.org/package=simpleopenmp)
 [![R-CMD-check](https://github.com/coolbutuseless/simpleopenmp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/coolbutuseless/simpleopenmp/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -72,9 +71,9 @@ y <- runif(1e6)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Sanity check all results are equal
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-res_r      <- pdist_r(x, y)
-res_c     <- pdist_c(x, y)
-res_openmp <- pdist_openmp(x, y)
+res_r      <- pdist_r(x, y)       # Just R code
+res_c      <- pdist_c(x, y)       # Serial C code
+res_openmp <- pdist_openmp(x, y)  # Parallel R code with 2 threads
 
 stopifnot(isTRUE(all.equal(res_r, res_c)))
 stopifnot(isTRUE(all.equal(res_r, res_openmp)))
@@ -159,7 +158,7 @@ The `configure` script in this package is heavily based upon the work of
 Notes:
 
 * You may need to install `checkbashisms` script as `R CMD CHECK` requires this
-  for checking the `configure` and `clean` scripts
+  for checking the `configure` and `cleanup` scripts
     * On macOS install [homebrew](https://brew.sh/) and run `brew install checkbashisms`
 
 
