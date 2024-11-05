@@ -97,7 +97,7 @@ bench::mark(
 
 Each call to `sleep_c()` or `sleep_openmp()` runs a `for` loop in C `N` times.
 
-Each loop pauses for `sleep(1)` (1 second).
+Each loop pauses for a `nanosleep()` of 0.1 seconds.
 
 ```{r nanosleep}
 library(simpleopenmp)

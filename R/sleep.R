@@ -3,7 +3,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Sleep inside a forloop in C in serial or in parallel
 #' 
-#' @param N number of 1 second sleeps
+#' @param N number of 0.1 second sleeps
 #' @param nthreads number of threads
 #' @return None
 #' @examples

@@ -1,7 +1,7 @@
 Package: simpleopenmp
 Type: Package
 Title: OpenMP HelloWorld
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Mike", "Cheng", role = c("aut", "cre", 'cph'), email = "mikefc@coolbutuseless.com")
     )
@@ -11,7 +11,9 @@ BugReports: https://github.com/coolbutuseless/simpleopenmp/issues
 Description: A basic R package which uses OpenMP to parallelize sections of
     the C code. This package also includes the configure and Makevars scripts
     so that OpenMP can be linked if it is available, and silently ignored
-    if it is not.
+    if it is not.  Special care is taken with the macOS platform where
+    the user must manually install the header and lib, as these do not come
+    by default.
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2

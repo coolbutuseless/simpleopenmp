@@ -19,11 +19,11 @@
 // A plain C version
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SEXP sleep_c_(SEXP N_) {
-  
-  
+  const struct timespec dur = {.tv_sec = 0, .tv_nsec = 1e8}; // 0.1 seconds
   int N = asInteger(N_);
+  
   for (int i = 0; i < N; i++) {
-    sleep(1);
+    nanosleep(&dur, NULL);
   }
   
   return R_NilValue;
@@ -36,6 +36,7 @@ SEXP sleep_c_(SEXP N_) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SEXP sleep_openmp_(SEXP N_, SEXP nthreads_) {
   
+  const struct timespec dur = {.tv_sec = 0, .tv_nsec = 1e8}; // 0.1 seconds
   int N = asInteger(N_);
 
 #ifdef _OPENMP
@@ -45,7 +46,7 @@ SEXP sleep_openmp_(SEXP N_, SEXP nthreads_) {
 #pragma omp parallel for
 #endif
   for (int i = 0; i < N; i++) {
-    sleep(1);
+    nanosleep(&dur, NULL);
   }
   
   return R_NilValue;
