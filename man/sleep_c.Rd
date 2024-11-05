@@ -10,7 +10,7 @@ sleep_c(N = 2)
 sleep_openmp(N = 2, nthreads = 2)
 }
 \arguments{
-\item{N}{number of 1 second sleeps}
+\item{N}{number of 0.1 second sleeps}
 
 \item{nthreads}{number of threads}
 }
