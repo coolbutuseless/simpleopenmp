@@ -61,7 +61,7 @@ has_openmp()
 
 
 
-```{r example}
+```{r pdist}
 library(simpleopenmp)
 
 set.seed(1)
@@ -89,8 +89,34 @@ bench::mark(
   pdist_openmp(x, y, nthreads = 4),
   pdist_openmp(x, y, nthreads = 8),
   relative = TRUE
-)[, 1:5] |> knitr::kable()
+)[, 1:4] |> knitr::kable()
 ```
+
+
+## Benchmark `nanosleep()`
+
+Each call to `sleep_c()` or `sleep_openmp()` runs a `for` loop in C `N` times.
+
+Each loop pauses for `sleep(1)` (1 second).
+
+```{r nanosleep}
+library(simpleopenmp)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Simple benchmark
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bench::mark(
+  sleep_c     (N = 8),
+  sleep_openmp(N = 8, nthreads = 1),
+  sleep_openmp(N = 8, nthreads = 2),
+  sleep_openmp(N = 8, nthreads = 4),
+  sleep_openmp(N = 8, nthreads = 8),
+  iterations = 1,
+  relative = TRUE
+)[, 1:4] |> knitr::kable()
+```
+
+
 
 
 

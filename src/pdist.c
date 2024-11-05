@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <unistd.h>
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif

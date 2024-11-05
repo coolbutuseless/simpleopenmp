@@ -1,7 +1,7 @@
 Package: simpleopenmp
 Type: Package
 Title: OpenMP HelloWorld
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Mike", "Cheng", role = c("aut", "cre", 'cph'), email = "mikefc@coolbutuseless.com")
     )

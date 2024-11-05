@@ -75,17 +75,49 @@ bench::mark(
   pdist_openmp(x, y, nthreads = 4),
   pdist_openmp(x, y, nthreads = 8),
   relative = TRUE
-)[, 1:5] |> knitr::kable()
+)[, 1:4] |> knitr::kable()
 ```
 
-| expression                       |       min |    median |   itr/sec | mem_alloc |
-|:---------------------------------|----------:|----------:|----------:|----------:|
-| pdist_r(x, y)                    | 32.889105 | 11.061369 |  1.000000 |         2 |
-| pdist_c(x, y)                    |  3.783722 |  2.537383 |  4.390539 |         1 |
-| pdist_openmp(x, y, nthreads = 1) |  3.814306 |  2.517523 |  4.403627 |         1 |
-| pdist_openmp(x, y, nthreads = 2) |  1.896230 |  1.634890 |  6.897379 |         1 |
-| pdist_openmp(x, y, nthreads = 4) |  1.000000 |  1.049221 | 11.003295 |         1 |
-| pdist_openmp(x, y, nthreads = 8) |  1.689785 |  1.000000 | 10.886449 |         1 |
+| expression                       |       min |    median |   itr/sec |
+|:---------------------------------|----------:|----------:|----------:|
+| pdist_r(x, y)                    | 34.387366 | 10.979843 |  1.000000 |
+| pdist_c(x, y)                    |  3.807942 |  2.529004 |  4.577578 |
+| pdist_openmp(x, y, nthreads = 1) |  3.835690 |  2.552162 |  4.577630 |
+| pdist_openmp(x, y, nthreads = 2) |  1.890642 |  1.630405 |  7.197017 |
+| pdist_openmp(x, y, nthreads = 4) |  1.000000 |  1.074935 | 11.076934 |
+| pdist_openmp(x, y, nthreads = 8) |  1.360717 |  1.000000 | 11.603468 |
+
+## Benchmark `nanosleep()`
+
+Each call to `sleep_c()` or `sleep_openmp()` runs a `for` loop in C `N`
+times.
+
+Each loop pauses for `sleep(1)` (1 second).
+
+``` r
+library(simpleopenmp)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Simple benchmark
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bench::mark(
+  sleep_c     (N = 8),
+  sleep_openmp(N = 8, nthreads = 1),
+  sleep_openmp(N = 8, nthreads = 2),
+  sleep_openmp(N = 8, nthreads = 4),
+  sleep_openmp(N = 8, nthreads = 8),
+  iterations = 1,
+  relative = TRUE
+)[, 1:4] |> knitr::kable()
+```
+
+| expression                        |      min |   median |  itr/sec |
+|:----------------------------------|---------:|---------:|---------:|
+| sleep_c(N = 8)                    | 7.993671 | 7.993671 | 1.000000 |
+| sleep_openmp(N = 8, nthreads = 1) | 7.982542 | 7.982542 | 1.001394 |
+| sleep_openmp(N = 8, nthreads = 2) | 3.990732 | 3.990732 | 2.003059 |
+| sleep_openmp(N = 8, nthreads = 4) | 1.999907 | 1.999907 | 3.997021 |
+| sleep_openmp(N = 8, nthreads = 8) | 1.000000 | 1.000000 | 7.993671 |
 
 ## Status by Platform
 
