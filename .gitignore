@@ -1,0 +1,15 @@
+.DS_Store
+.Rhistory
+*.Rproj
+.Rproj.user
+*.swp
+inst/doc
+doc
+Meta
+pkgdown
+configure.log
+src/Makevars
+a.out
+a.out.dSYM
+working
+

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# The 'configure' script 
+#   - generates the 'Makevars' file from the 'Makevars.in' template
+#   - the 'configure' script output debugging input to 'configure.log'
+# It is my responsibility (as pkg author) to clean these two files up, 
+# otherwise The R build process may package these files with the distribution
+# tarball.
+# This would be bad because the 'Makevars' needs to be remade for each system
+# the package is compiled on, and the 'configure.log' would be considered
+# junk by the CRAN build process (but is otherwise useful for me for debuggin)
+rm -f src/Makevars configure.log
+rm -f a.out a.out.dSYM
+

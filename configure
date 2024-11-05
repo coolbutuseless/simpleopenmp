@@ -1,0 +1,127 @@
+#!/bin/sh
+
+# This is a frankenstein script stealing from
+#    Anticonf (tm) script by Jeroen Ooms (2024)
+#    Gabor Csardi's configure script
+# All mistakes are mine (MikeFC @coolbutuseless)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Check that this is not just ./configure. We need to run this
+# from R CMD INSTALL, to have the R env vars set.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if [ -z "$R_HOME" ]; then
+    echo >&2 R_HOME is not set, are you running R CMD INSTALL?
+    exit 1
+fi
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Library settings
+#   R's build process automatically sets some of these
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PKG_LIBS="$SHLIB_OPENMP_CFLAGS"
+PKG_CFLAGS="$SHLIB_OPENMP_CFLAGS"
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# These are the mac-specific flags this whole configure script is needed for
+# For platforms other than mac, R automatically sets the SHLIB_OPENMP_FLAGS
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MAC_OMP_PKG_CPPFLAGS=''
+MAC_OMP_PKG_LIBS=''
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Find compiler
+# We need to use R's C compiler to compiler the test program to see
+# if full 'omp' header and libs are installed on macOS
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CC=`${R_HOME}/bin/R CMD config CC`
+CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
+CPPFLAGS=`${R_HOME}/bin/R CMD config CPPFLAGS`
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Allow the person building the package to specify extra 'include'
+# and 'lib' directories in the search path.
+# 
+# E.g.
+#     R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
+#   echo "Found INCLUDE_DIR and/or LIB_DIR!"
+#   PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
+#   PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
+# fi
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This is a simple test to see if the 'omp.h' header exists.
+# However, according to "Writing R Extensions"
+#    If you do use your own checks, make sure that OpenMP support is complete 
+#    by compiling and linking an OpenMP-using program: on some platforms the 
+#    runtime library is optional and on others that library depends on other 
+#    optional libraries. 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Test configuration by testing if header exists
+# echo "#include <omp.h>" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>configure.log
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# On macOS we will attempt to compile a small OpenMP program.
+#
+# If OpenMP has been installed on mac (follwoing https://mac.r-project.org/openmp/)
+# then "omp.h" and the "omp" shared lib will be in the path.
+# 
+# However, SHLIB_OPENMP_CFLAGS does not use this on mac - it just assumes
+# that macOS doesn't support OpenMP at all. 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if [ "$R_OSTYPE" = "unix" ]; then
+    UNAME=`uname`
+else
+    UNAME=Windows
+fi
+
+if [ "$UNAME" = "Darwin" ]; then
+
+# Compile and execute a small openmp program.
+echo '#include <omp.h>
+int main(int argc, char** argv){ omp_get_thread_num(); return 0;}' | ${CC} -Xclang -fopenmp ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -lomp -xc - && ./a.out >/dev/null 2>configure.log
+
+# $? contains the exit code of the last command (0 = success, >0 = error-code)
+# If running that compile step failed, then print what I can and exit
+if [ $? -ne 0 ]; then
+  echo "--------------------------- [configure] --------------------------------"
+  echo "OpenMP installation not found on mac"
+  echo "See: https://mac.r-project.org/openmp/"
+  echo "-------------------------- [MESSAGE] ---------------------------"
+  cat configure.log
+  echo "--------------------------------------------------------------------"
+else
+  MAC_OMP_PKG_CPPFLAGS="-Xclang -fopenmp"
+  MAC_OMP_PKG_LIBS="-lomp"
+fi
+
+fi
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# For debugging
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo "Using PKG_CPPFLAGS         = $PKG_CPPFLAGS"
+echo "Using PKG_CFLAGS           = $PKG_CFLAGS"
+echo "Using PKG_LIBS             = $PKG_LIBS"
+echo "Using SHLIB_OPENMP_CFLAGS  = $SHLIB_OPENMP_CFLAGS"
+echo "Using MAC_OMP_PKG_CPPFLAGS = $MAC_OMP_PKG_CPPFLAGS"
+echo "Using MAC_OMP_PKG_LIBS     = $MAC_OMP_PKG_LIBS"
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Convert 'Makevars.in' to 'Makevars' by replacing the relevant placeholds
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sed -e "s|@mac_omp_pkg_cppflags@|$MAC_OMP_PKG_CPPFLAGS|" -e "s|@mac_omp_pkg_libs@|$MAC_OMP_PKG_LIBS|" src/Makevars.in > src/Makevars
+
+
+# Success
+exit 0

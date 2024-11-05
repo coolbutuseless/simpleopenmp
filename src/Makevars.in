@@ -1,0 +1,14 @@
+# This template file 'Makevars.in' is processed by the 'configure' script
+# to produce the 'Makevars' required for compiling the package on this platform.
+# 
+# Commonly variables in here marked like "@clags@" are replaced with the actual 
+# value with a 'sed' statement when this template file is rewritten to 'Makevars'
+
+PKG_CPPFLAGS = @mac_omp_pkg_cppflags@ 
+PKG_CFLAGS   = $(SHLIB_OPENMP_CFLAGS)
+PKG_LIBS     = $(SHLIB_OPENMP_CFLAGS) @mac_omp_pkg_libs@
+
+all: clean
+
+clean:
+	rm -f $(SHLIB) $(OBJECTS)

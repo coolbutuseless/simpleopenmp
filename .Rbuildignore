@@ -1,0 +1,13 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^README.Rmd$
+^README.md$
+^LICENSE.md$
+^working$
+^.devcontainer$
+^man/figures$
+^src/Makevars$
+^configure.log$
+^a.out$
+^a.out.dSYM$
+^\.github$
