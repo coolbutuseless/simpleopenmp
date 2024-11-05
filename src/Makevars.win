@@ -1,0 +1,11 @@
+# This is the 'Makevars' used on windows machines.
+
+PKG_CFLAGS   = $(SHLIB_OPENMP_CFLAGS)
+PKG_LIBS     = $(SHLIB_OPENMP_CFLAGS)
+
+all: clean
+
+clean:
+	rm -f $(SHLIB) $(OBJECTS)
+
+
