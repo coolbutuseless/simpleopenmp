@@ -80,19 +80,19 @@ bench::mark(
 
 | expression                       |       min |    median |   itr/sec |
 |:---------------------------------|----------:|----------:|----------:|
-| pdist_r(x, y)                    | 34.387366 | 10.979843 |  1.000000 |
-| pdist_c(x, y)                    |  3.807942 |  2.529004 |  4.577578 |
-| pdist_openmp(x, y, nthreads = 1) |  3.835690 |  2.552162 |  4.577630 |
-| pdist_openmp(x, y, nthreads = 2) |  1.890642 |  1.630405 |  7.197017 |
-| pdist_openmp(x, y, nthreads = 4) |  1.000000 |  1.074935 | 11.076934 |
-| pdist_openmp(x, y, nthreads = 8) |  1.360717 |  1.000000 | 11.603468 |
+| pdist_r(x, y)                    | 32.960738 | 11.267229 |  1.000000 |
+| pdist_c(x, y)                    |  3.788328 |  2.532754 |  4.754811 |
+| pdist_openmp(x, y, nthreads = 1) |  3.790510 |  2.518783 |  4.784875 |
+| pdist_openmp(x, y, nthreads = 2) |  1.891435 |  1.649798 |  7.132673 |
+| pdist_openmp(x, y, nthreads = 4) |  1.000000 |  1.058988 | 11.600424 |
+| pdist_openmp(x, y, nthreads = 8) |  1.342063 |  1.000000 | 11.808608 |
 
 ## Benchmark `nanosleep()`
 
 Each call to `sleep_c()` or `sleep_openmp()` runs a `for` loop in C `N`
 times.
 
-Each loop pauses for `sleep(1)` (1 second).
+Each loop pauses for a `nanosleep()` of 0.1 seconds.
 
 ``` r
 library(simpleopenmp)
@@ -113,11 +113,11 @@ bench::mark(
 
 | expression                        |      min |   median |  itr/sec |
 |:----------------------------------|---------:|---------:|---------:|
-| sleep_c(N = 8)                    | 7.993671 | 7.993671 | 1.000000 |
-| sleep_openmp(N = 8, nthreads = 1) | 7.982542 | 7.982542 | 1.001394 |
-| sleep_openmp(N = 8, nthreads = 2) | 3.990732 | 3.990732 | 2.003059 |
-| sleep_openmp(N = 8, nthreads = 4) | 1.999907 | 1.999907 | 3.997021 |
-| sleep_openmp(N = 8, nthreads = 8) | 1.000000 | 1.000000 | 7.993671 |
+| sleep_c(N = 8)                    | 7.913679 | 7.913679 | 1.000000 |
+| sleep_openmp(N = 8, nthreads = 1) | 7.852597 | 7.852597 | 1.007779 |
+| sleep_openmp(N = 8, nthreads = 2) | 3.921958 | 3.921958 | 2.017788 |
+| sleep_openmp(N = 8, nthreads = 4) | 1.998675 | 1.998675 | 3.959464 |
+| sleep_openmp(N = 8, nthreads = 8) | 1.000000 | 1.000000 | 7.913679 |
 
 ## Status by Platform
 
